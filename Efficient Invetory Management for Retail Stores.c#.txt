@@ -1,0 +1,142 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+// Define a Product class to represent individual products in inventory 
+class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Quantity { get; set; }
+    public decimal Price { get; set; }
+}
+
+// Define a class to manage inventory 
+class InventoryManager
+{
+    private List<Product> products;
+
+    // Singleton instance 
+    private static InventoryManager instance;
+
+    private InventoryManager()
+    {
+        products = new List<Product>();
+    }
+
+    // Singleton pattern implementation 
+    public static InventoryManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new InventoryManager();
+            }
+            return instance;
+        }
+    }
+
+    // Add a product to inventory 
+    public void AddProduct(Product product)
+    {
+        product.Id = products.Count + 1;
+        products.Add(product);
+    }
+
+    // Update a product's quantity 
+    public void UpdateProductQuantity(int productId, int quantity)
+    {
+        Product product = products.FirstOrDefault(p => p.Id == productId);
+        if (product != null)
+        {
+            product.Quantity = quantity;
+        }
+        else
+        {
+            Console.WriteLine("Product not found.");
+        }
+    }
+
+    // Check inventory for a specific product 
+    public void CheckInventory(int productId)
+    {
+        Product product = products.FirstOrDefault(p => p.Id == productId);
+        if (product != null)
+        {
+            Console.WriteLine($"Product: {product.Name}, Quantity: {product.Quantity}, Price: {product.Price}");
+        }
+        else
+        {
+            Console.WriteLine("Product not found.");
+        }
+    }
+
+    // Generate a report of inventory 
+    public void GenerateInventoryReport()
+    {
+        Console.WriteLine("Inventory Report:");
+        foreach (Product product in products)
+        {
+            Console.WriteLine($"ID: {product.Id}, Name: {product.Name}, Quantity: {product.Quantity}, Price: {product.Price}");
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        InventoryManager inventoryManager = InventoryManager.Instance;
+
+        bool exit = false;
+        while (!exit)
+        {
+            Console.WriteLine("\n1. Add Product\n2. Update Product Quantity\n3. Check Inventory\n4. Generate Inventory Report\n5. Exit");
+            Console.Write("Select an option: ");
+            string option = Console.ReadLine();
+
+            switch (option)
+            {
+                case "1":
+                    Console.Write("Enter product name: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Enter product quantity: ");
+                    int quantity = int.Parse(Console.ReadLine());
+                    Console.Write("Enter product price: ");
+                    decimal price = decimal.Parse(Console.ReadLine());
+                    Product newProduct = new Product { Name = name, Quantity = quantity, Price = price };
+                    inventoryManager.AddProduct(newProduct);
+                    Console.WriteLine("Product added successfully.");
+                    break;
+
+                case "2":
+                    Console.Write("Enter product ID: ");
+                    int productId = int.Parse(Console.ReadLine());
+                    Console.Write("Enter new quantity: ");
+                    int newQuantity = int.Parse(Console.ReadLine());
+                    inventoryManager.UpdateProductQuantity(productId, newQuantity);
+                    Console.WriteLine("Quantity updated successfully.");
+                    break;
+
+                case "3":
+                    Console.Write("Enter product ID: ");
+                    int checkProductId = int.Parse(Console.ReadLine());
+                    inventoryManager.CheckInventory(checkProductId);
+                    break;
+
+                case "4":
+                    inventoryManager.GenerateInventoryReport();
+                    break;
+
+                case "5":
+                    exit = true;
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    break;
+            }
+        }
+    }
+}
